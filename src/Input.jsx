@@ -26,6 +26,16 @@ const Input = ({formHandler,setLoader,setReportDetails} ) => {
                 </div>
                 <span className="text-sm text-sky-500">Download</span>
               </a>
+              <a href={import.meta.env.VITE_REPORT_PREVIEW} className="rounded-full flex items-center gap-2 px-1.5 py-1 border h-8 cursor-pointer bg-sky-500/15 hover:bg-sky-500/20 border-sky-400 text-sky-500" type="button"  download>
+                <div className="w-4 h-4 flex items-center justify-center shrink-0">
+                  <svg className="text-sky-500" strokeLinejoin="round" strokeLinecap="round" strokeWidth={2} stroke="currentColor" fill="none" viewBox="0 0 24 24" height={16} width={16} xmlns="http://www.w3.org/2000/svg">
+                    <circle r={10} cy={12} cx={12} />
+                    <path d="M2 12h20" />
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                  </svg>
+                </div>
+                <span className="text-sm text-sky-500">Preview</span>
+              </a>
             </div>
             <div className="absolute right-3 bottom-3"onClick={()=>setLoader(true)}   >
               <button onClick={()=>setLoader(true)} className="rounded-lg p-2 bg-white/5 hover:bg-white/10 text-white/40 hover:text-white cursor-pointer transition-colors" type="submit">

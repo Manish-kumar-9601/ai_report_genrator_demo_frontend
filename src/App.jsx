@@ -3,136 +3,218 @@ import './App.css'
 import Input from './Input';
 import { io } from 'socket.io-client';
 import { socket } from './socket';
-
+import { renderAsync } from 'docx-preview'
 export const App = () =>
 {
-  const viewRef=useRef(null)
+  const viewerRef = useRef(null)
   const [docTitle, setDocTitle] = useState('doc')
   const [reportDetails, setReportDetails] = useState('')
-  const [getreport,setGetReport]=useState([])
-  const [loader,setLoader]=useState(false);
-  const [isConnected,setIsConnected]=useState(socket.connected)
-  const [change,setChange]=useState(0)
+  const [reportPreview, setReportPreview] = useState(null)
+  const [getreport, setGetReport] = useState([])
+  const [loader, setLoader] = useState(false);
+  const [isConnected, setIsConnected] = useState(socket.connected)
+  const [change, setChange] = useState(0)
+  const [error, setError] = useState('')
+  const [docxContent, setDocxContent] = useState(null);
   // console.log(docTitle, reportDetails);
   // console.log(import.meta.env.VITE_REPORT);
   // console.log(import.meta.env.VITE_DOWNLOAD_REPORT);
-  const link=document.createElement('a')
-  link.href=import.meta.env.VITE_DOWNLOAD_REPORT
-  document.body.append(link)
-  link.setAttribute('download',`${docTitle}.docx`)
+  // const link=document.createElement('a')
+  // link.href=import.meta.env.VITE_DOWNLOAD_REPORT
+  // document.body.append(link)
+  // link.setAttribute('download',`${docTitle}.docx`)
+  const handleDownloadAndPreview = async () =>
+  {
+    try
+    {
+      // Fetch the document from your API
+      const response = await fetch('http://localhost:3000/api/v1/report-preview');
+      if (!response.ok)
+      {
+        throw new Error('Failed to fetch document');
+      }
+
+      // Get the document as ArrayBuffer
+      const arrayBuffer = await response.arrayBuffer();
+
+      // Store the content for potential reuse
+      setDocxContent(arrayBuffer);
+
+      // Render the preview
+      await renderAsync(arrayBuffer, viewerRef.current);
+      setError("");
+    } catch (err)
+    {
+      setError("An error occurred while processing the document");
+      console.error(err);
+    }
+  };
+
   const formHandler = async (e) =>
   {
     e.preventDefault();
-    try {
-      if(!docTitle || !reportDetails){
-       return console.log('all field required');
+    try
+    {
+      if (!reportDetails)
+      {
+        return console.log('all field required');
       }
       socket.connect()
       setLoader(true)
 
-      const response=await fetch(import.meta.env.VITE_REPORT,{
+      const response = await fetch(import.meta.env.VITE_REPORT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          docTitle,reportDetails
+          docTitle, reportDetails
         })
-      }).then((res)=>{
+      }).then((res) =>
+      {
         console.log(res);
-        if(res.status===200){
+        if (res.status === 200)
+        {
           // setGetReport(res?.result)
         }
         // setTimeout(()=>{
         //   link.click()
         // },1000)
       })
-      
+
       // console.log(response);
-    } catch (error) {
+    } catch (error)
+    {
       console.log(error);
     }
   }
-//  const timekey= set(()=>{
-//   count=1
-//     console.groupEnd(count+=1)
-//   }, 3000);
-    useEffect(()=>{
-      function onConnect() {
-        setIsConnected(true);
-      }
-  
-      function onDisconnect() {
-        setIsConnected(false);
-      }
-  
-      function reportEvent(value) {
-        setGetReport(previous => [...previous, value]);
-        console.log("resport ",getreport);
-      }
-  
-      socket.on('connect', onConnect);
-      socket.on('result', (result)=>{
-        console.log("result",result);
-        if(result !==null || result !==undefined){
-setLoader(false)
-setGetReport(result)
-        }
-        // clearInterval(timekey)
-      });
-      socket.on('disconnect', onDisconnect);
-  
-      return () => {
-        socket.off('connect', onConnect);
-        socket.off('disconnect', onDisconnect);
-        socket.off('foo', reportEvent);
-      };
-    },[loader,change])
+  //  const timekey= set(()=>{
+  //   count=1
+  //     console.groupEnd(count+=1)
+  //   }, 3000);
+  useEffect(() =>
+  {
+    function onConnect ()
+    {
+      setIsConnected(true);
+    }
 
-    useEffect(() => {
-      // If you prefer to use the Iframe implementation, you can replace this line with: WebViewer.Iframe(...)
-      WebViewer.WebComponent(
-        {
-          path: '/webviewer/lib',
-          initialDoc: '/files/PDFTRON_about.pdf',
-          licenseKey: 'your_license_key',  // sign up to get a free trial key at https://dev.apryse.com
-        },
-        viewer.current,
-      ).then((instance) => {
-        const { documentViewer, annotationManager, Annotations } = instance.Core;
-  
-        documentViewer.addEventListener('documentLoaded', () => {
-          const rectangleAnnot = new Annotations.RectangleAnnotation({
-            PageNumber: 1,
-            // values are in page coordinates with (0, 0) in the top left
-            X: 100,
-            Y: 150,
-            Width: 200,
-            Height: 50,
-            Author: annotationManager.getCurrentUser()
-          });
-  
-          annotationManager.addAnnotation(rectangleAnnot);
-          // need to draw the annotation otherwise it won't show up until the page is refreshed
-          annotationManager.redrawAnnotation(rectangleAnnot);
-        });
-      });
-    }, []);
+    function onDisconnect ()
+    {
+      setIsConnected(false);
+    }
+
+    function reportEvent (value)
+    {
+      setGetReport(previous => [...previous, value]);
+      console.log("resport ", getreport);
+    }
+
+    socket.on('connect', onConnect);
+    socket.on('result', (result) =>
+    {
+      console.log("result", result);
+      if (result !== null || result !== undefined)
+      {
+        setLoader(false)
+        setGetReport(result)
+        handleDownloadAndPreview()
+      }
+      // clearInterval(timekey)
+    });
+    socket.on('disconnect', onDisconnect);
+
+    return () =>
+    {
+      socket.off('connect', onConnect);
+      socket.off('disconnect', onDisconnect);
+      socket.off('foo', reportEvent);
+    };
+  }, [loader])
+
+
+
+  socket.on('receiveFile', async (data) =>
+  {
+    console.groupEnd(data)
+    console.log('receive file');
+    const byteCharacters = atob(data.fileData);
+    const byteNumbers = new Array(byteCharacters.length).fill().map((_, i) => byteCharacters.charCodeAt(i));
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+
+    const fileInput = document.getElementById('fileInput');
+    const fileData = new File([blob], data.fileName);
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(fileData);
+    fileInput.files = dataTransfer.files;
+    fileInput.style.display = 'block'; // Make the file input visible to confirm the file is populated
+
+    const file = fileInput.files[0];
+
+    if (!file || file.type !== "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+    {
+      setError("Please upload a valid .docx file.");
+      return;
+    }
+
+    setError("");
+
+    try
+    {
+      const arrayBuffer = await file.arrayBuffer();
+      await renderAsync(arrayBuffer, viewerRef.current);
+    } catch (error)
+    {
+      setError("An error occurred rendering the document");
+    }
+  });
+
+
+  const handleFileChange = async (e) =>
+  {
+    // read the docx file which is selected
+    const file = e.target.files[0]
+
+    if (!file || file.type !== "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+    {
+      setError("Please upload a valid .docx file.");
+      return;
+    }
+
+    setError("")
+
+    const arrayBuffer = await file.arrayBuffer()
+
+    renderAsync(arrayBuffer, viewerRef.current).catch(() =>
+    {
+      setError("An error occured rendering the document")
+    })
+
+  }
+
   return (
     <>
-    {/* <textarea className='w-full  p-5   ' value={getreport}> </textarea> */}
-     {
-      loader ? <div className="loader absolute right-[50%] left-[50%] top-[40%] " >
-      <div className="circle"></div>
-      <div className="circle"></div>
-      <div className="circle"></div>
-      <div className="circle"></div>
-  </div>
-  : <div ref={viewRef}>
+      {
+        loader ? <div className="loader absolute right-[50%] left-[50%] top-[40%] " >
+          <div className="circle"></div>
+          <div className="circle"></div>
+          <div className="circle"></div>
+          <div className="circle"></div>
+        </div>
+          : <>
+            <div ref={viewerRef} className='transition'
+              style={{
 
-  </div>
-     }
-<Input formHandler={formHandler} setLoader={setLoader} setReportDetails={setReportDetails} />
-       
-        {/* <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={formHandler} >
+                padding: "8px",
+                height: "80vh",
+                overflow: "scroll"
+              }}
+            >
+            </div>
+          </>
+      }
+      <Input formHandler={formHandler} setLoader={setLoader} setReportDetails={setReportDetails} handleFileChange={handleFileChange} />
+
+      {/* <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={formHandler} >
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="doc title">
               doc title
@@ -156,7 +238,7 @@ setGetReport(result)
           </div>
         </form> */}
 
-     
+
     </>
   )
 }

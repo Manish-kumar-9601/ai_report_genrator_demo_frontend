@@ -132,64 +132,8 @@ export const App = () =>
 
 
 
-  socket.on('receiveFile', async (data) =>
-  {
-    console.groupEnd(data)
-    console.log('receive file');
-    const byteCharacters = atob(data.fileData);
-    const byteNumbers = new Array(byteCharacters.length).fill().map((_, i) => byteCharacters.charCodeAt(i));
-    const byteArray = new Uint8Array(byteNumbers);
-    const blob = new Blob([byteArray], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
-
-    const fileInput = document.getElementById('fileInput');
-    const fileData = new File([blob], data.fileName);
-    const dataTransfer = new DataTransfer();
-    dataTransfer.items.add(fileData);
-    fileInput.files = dataTransfer.files;
-    fileInput.style.display = 'block'; // Make the file input visible to confirm the file is populated
-
-    const file = fileInput.files[0];
-
-    if (!file || file.type !== "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-    {
-      setError("Please upload a valid .docx file.");
-      return;
-    }
-
-    setError("");
-
-    try
-    {
-      const arrayBuffer = await file.arrayBuffer();
-      await renderAsync(arrayBuffer, viewerRef.current);
-    } catch (error)
-    {
-      setError("An error occurred rendering the document");
-    }
-  });
 
 
-  const handleFileChange = async (e) =>
-  {
-    // read the docx file which is selected
-    const file = e.target.files[0]
-
-    if (!file || file.type !== "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-    {
-      setError("Please upload a valid .docx file.");
-      return;
-    }
-
-    setError("")
-
-    const arrayBuffer = await file.arrayBuffer()
-
-    renderAsync(arrayBuffer, viewerRef.current).catch(() =>
-    {
-      setError("An error occured rendering the document")
-    })
-
-  }
 
   return (
     <>
@@ -201,18 +145,21 @@ export const App = () =>
           <div className="circle"></div>
         </div>
           : <>
-            <div ref={viewerRef} className='transition'
-              style={{
+            {
+              docxContent ? <div ref={viewerRef} className='transition'
+                style={{
 
-                padding: "8px",
-                height: "80vh",
-                overflow: "scroll"
-              }}
-            >
-            </div>
+                  padding: "8px",
+                  height: "80vh",
+                  overflow: "scroll"
+                }}
+              >
+              </div> : <>
+              </>
+            }
           </>
       }
-      <Input formHandler={formHandler} setLoader={setLoader} setReportDetails={setReportDetails} handleFileChange={handleFileChange} />
+      <Input formHandler={formHandler} setLoader={setLoader} setReportDetails={setReportDetails}   />
 
       {/* <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={formHandler} >
           <div className="mb-4">

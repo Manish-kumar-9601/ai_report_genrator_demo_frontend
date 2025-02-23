@@ -27,7 +27,7 @@ const Input = ({formHandler,setLoader,setReportDetails} ) => {
                 <span className="text-sm text-sky-500">Download</span>
               </a>
             </div>
-            <div className="absolute right-3 bottom-3">
+            <div className="absolute right-3 bottom-3"onClick={()=>setLoader(true)}   >
               <button onClick={()=>setLoader(true)} className="rounded-lg p-2 bg-white/5 hover:bg-white/10 text-white/40 hover:text-white cursor-pointer transition-colors" type="submit">
                 <svg strokeLinejoin="round" strokeLinecap="round" strokeWidth={1} stroke="currentColor" fill="none" viewBox="0 0 24 24" height={24} width={24} xmlns="http://www.w3.org/2000/svg">
                   <path d="m22 2-7 20-4-9-9-4Z" />

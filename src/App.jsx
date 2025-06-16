@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import './App.css'
 import Input from './Input';
-import { io } from 'socket.io-client';
-import { socket } from './socket';
+// import { socket } from './socket';
 import { renderAsync } from 'docx-preview'
 export const App = () =>
 {
@@ -12,17 +11,11 @@ export const App = () =>
   const [reportPreview, setReportPreview] = useState(null)
   const [getreport, setGetReport] = useState([])
   const [loader, setLoader] = useState(false);
-  const [isConnected, setIsConnected] = useState(socket.connected)
+  
   const [change, setChange] = useState(0)
   const [error, setError] = useState('')
   const [docxContent, setDocxContent] = useState(null);
-  // console.log(docTitle, reportDetails);
-  // console.log(import.meta.env.VITE_REPORT);
-  // console.log(import.meta.env.VITE_DOWNLOAD_REPORT);
-  // const link=document.createElement('a')
-  // link.href=import.meta.env.VITE_DOWNLOAD_REPORT
-  // document.body.append(link)
-  // link.setAttribute('download',`${docTitle}.docx`)
+ 
   const handleDownloadAndPreview = async () =>
   {
     try
@@ -59,7 +52,6 @@ export const App = () =>
       {
         return console.log('all field required');
       }
-      socket.connect()
       setLoader(true)
 
       const response = await fetch(import.meta.env.VITE_REPORT, {
@@ -73,66 +65,23 @@ export const App = () =>
         console.log(res);
         if (res.status === 200)
         {
-          // setGetReport(res?.result)
+          setGetReport(res?.result)
+          handleDownloadAndPreview()
+          setLoader(false)
         }
         // setTimeout(()=>{
         //   link.click()
         // },1000)
       })
 
-      // console.log(response);
+      console.log(response);
     } catch (error)
     {
       console.log(error);
     }
   }
-  //  const timekey= set(()=>{
-  //   count=1
-  //     console.groupEnd(count+=1)
-  //   }, 3000);
-  useEffect(() =>
-  {
-    function onConnect ()
-    {
-      setIsConnected(true);
-    }
-
-    function onDisconnect ()
-    {
-      setIsConnected(false);
-    }
-
-    function reportEvent (value)
-    {
-      setGetReport(previous => [...previous, value]);
-      console.log("resport ", getreport);
-    }
-
-    socket.on('connect', onConnect);
-    socket.on('result', (result) =>
-    {
-      console.log("result", result);
-      if (result !== null || result !== undefined)
-      {
-        setLoader(false)
-        setGetReport(result)
-        handleDownloadAndPreview()
-      }
-      // clearInterval(timekey)
-    });
-    socket.on('disconnect', onDisconnect);
-
-    return () =>
-    {
-      socket.off('connect', onConnect);
-      socket.off('disconnect', onDisconnect);
-      socket.off('foo', reportEvent);
-    };
-  }, [loader])
-
-
-
-
+ 
+   
 
 
   return (
@@ -146,20 +95,24 @@ export const App = () =>
         </div>
           : <>
             {
-              docxContent ? <div ref={viewerRef} className='transition'
-                style={{
+              docxContent ? 
+              
+              // <div ref={viewerRef} className='transition'
+              //   style={{
 
-                  padding: "8px",
-                  height: "80vh",
-                  overflow: "scroll"
-                }}
-              >
-              </div> : <>
+              //     padding: "8px",
+              //     height: "80vh",
+              //     overflow: "scroll"
+              //   }}
+              // >
+              // </div>
+              <></>
+               : <>
               </>
             }
           </>
       }
-      <Input formHandler={formHandler} setLoader={setLoader} setReportDetails={setReportDetails}   />
+      <Input formHandler={formHandler} setLoader={setLoader} setReportDetails={setReportDetails}     />
 
       {/* <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={formHandler} >
           <div className="mb-4">

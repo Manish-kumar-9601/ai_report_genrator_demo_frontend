@@ -5,7 +5,7 @@ export const Templates = () => {
     const [file, setFile] = useState(null);
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
-  
+  const [response, setResponse] = useState(null);
     const handleFileChange = (e) => {
         console.log(e.target.files[0]);
       if (e.target.files[0]) {
@@ -32,7 +32,7 @@ export const Templates = () => {
       // ✅ Correctly create FormData
       const formData = new FormData();
       formData.append('templateFile', file);  // Make sure the field name matches backend's `upload.single("templateFile")`
-    
+    console.log(formData.get('templateFile'));
       try {
         const response = await axios.post(
           `${import.meta.env.VITE_REPORT_TEMPLATE}`, 
@@ -41,6 +41,7 @@ export const Templates = () => {
         );
     
         console.log(response.data);
+        setResponse([response.data]);
         setMessage('File uploaded successfully!');
       } catch (error) {
         console.error('Error uploading file:', error);
@@ -49,8 +50,8 @@ export const Templates = () => {
         setLoading(false);
       }
     };
-    
-  
+    console.log(response);
+    console.log("param",response[0]?.parameters, "filePath",response[0]?.filePath);
     return (
       <div className="file-upload-container bg-gray-100 p-6 rounded-lg shadow-md">
         <h2>Upload DOCX File</h2>
@@ -61,7 +62,7 @@ export const Templates = () => {
               onChange={handleFileChange} 
               className="bg-white border border-gray-300 rounded p-2 w-full"
               accept=".docx, .doc"
-              name="doc"
+              name="templateFile"
             />
           </div>
           <button 

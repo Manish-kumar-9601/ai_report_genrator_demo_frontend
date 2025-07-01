@@ -7,7 +7,13 @@ export const Templates = () => {
     const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState(null);
   const [docForm, setDocForm] = useState([])
-
+  
+  const [loader, setLoader] = useState(false);
+  
+ 
+  // const [error, setError] = useState('')
+ 
+  
   const docFormHandler =async (e) => {
     e.preventDefault()
     console.log("docForm", docForm);
@@ -18,7 +24,10 @@ export const Templates = () => {
     const responseData = await axios.post(
       `${import.meta.env.VITE_REPORT_DOC_TEMPLATE}`,
       {'docForm':docForm,filePath:response[0]?.filePath}
-    )
+    ).then(()=>{
+      setLoader(true);
+      setMessage('Document generated successfully!');
+    })
       console.log("responseData", responseData);
   }
     const handleFileChange = (e) => {
@@ -66,7 +75,9 @@ export const Templates = () => {
       }
     };
     console.log(response);
-    // console.log("param",response[0]?.parameters, "filePath",response[0]?.filePath);
+  
+
+   
     return (
       <>
       <div className="file-upload-container bg-gray-100 p-6 rounded-lg shadow-md">
@@ -114,14 +125,20 @@ export const Templates = () => {
               />
             </div>
           ))}
+            <div className="flex items-center justify-between">
           <button 
             type="submit" 
             className="bg-green-500 text-white p-2 rounded hover:bg-green-600 transition-colors"
           >
             Generate Document
           </button>
-
+            {/* {error && <p className="text-red-500">{error}</p>} */}
+        { loader &&    <a  className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" href={import.meta.env.VITE_REPORT_DOWNLOAD_DOC}  download>
+              download
+            </a>}
+          </div>
         </form>
+    
       </section>
 }
             </>

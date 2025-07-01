@@ -6,6 +6,21 @@ export const Templates = () => {
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState(null);
+  const [docForm, setDocForm] = useState([])
+
+  const docFormHandler =async (e) => {
+    e.preventDefault()
+    console.log("docForm", docForm);
+    if(!docForm) {
+      setMessage('Please fill in the form');
+      return;
+    }
+    const responseData = await axios.post(
+      `${import.meta.env.VITE_REPORT_DOC_TEMPLATE}`,
+      {'docForm':docForm,filePath:response[0]?.filePath}
+    )
+      console.log("responseData", responseData);
+  }
     const handleFileChange = (e) => {
         console.log(e.target.files[0]);
       if (e.target.files[0]) {
@@ -51,8 +66,9 @@ export const Templates = () => {
       }
     };
     console.log(response);
-    console.log("param",response[0]?.parameters, "filePath",response[0]?.filePath);
+    // console.log("param",response[0]?.parameters, "filePath",response[0]?.filePath);
     return (
+      <>
       <div className="file-upload-container bg-gray-100 p-6 rounded-lg shadow-md">
         <h2>Upload DOCX File</h2>
         <form onSubmit={handleSubmit} encType='multipart/form-data'>
@@ -63,17 +79,51 @@ export const Templates = () => {
               className="bg-white border border-gray-300 rounded p-2 w-full"
               accept=".docx, .doc"
               name="templateFile"
-            />
+              />
           </div>
           <button 
             type="submit" 
             className="upload-button my-4 bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors"
             disabled={loading}
-          >
+            >
             {loading ? 'Uploading...' : 'Upload'}
           </button>
         </form>
         {message && <p className="message">{message}</p>}
       </div>
+      {
+        response && 
+      
+      <section className="docFormSection">
+        <form  onSubmit={docFormHandler} className="bg-gray-50 p-6 rounded-lg shadow-md">
+          <h2 className="text-2xl font-bold mb-4">Document Parameters</h2>
+          {response && response[0]?.parameters && response[0].parameters.map((param, index) => (
+            <div key={index} className="mb-4 p-4 bg-white shadow rounded">
+              <label className="block text-sm font-medium text-gray-700">
+                {param}
+              </label>
+              <input
+           onChange={(e)=>setDocForm({
+            ...docForm,[param]: e.target.value})}
+                type="text"
+                name={param}
+                id={param}
+                required
+                placeholder={`Enter ${param}`}
+                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+              />
+            </div>
+          ))}
+          <button 
+            type="submit" 
+            className="bg-green-500 text-white p-2 rounded hover:bg-green-600 transition-colors"
+          >
+            Generate Document
+          </button>
+
+        </form>
+      </section>
+}
+            </>
     );
   };

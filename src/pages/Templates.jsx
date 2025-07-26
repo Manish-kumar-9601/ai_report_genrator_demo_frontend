@@ -8,7 +8,7 @@ export const Templates = () => {
     const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState(null);
   const [docForm, setDocForm] = useState([])
-  
+  const [uploadToDB, setUploadToDB] = useState(false);
   const [loader, setLoader] = useState(false);
   
  
@@ -54,10 +54,27 @@ export const Templates = () => {
     
       setLoading(true); 
     
-      // ✅ Correctly create FormData
       const formData = new FormData();
       formData.append('templateFile', file);  // Make sure the field name matches backend's `upload.single("templateFile")`
     console.log(formData.get('templateFile'));
+    if(uploadToDB) {
+      try {
+        const response = await axios.post(
+          `${import.meta.env.VITE_REPORT_UPLOAD_DOC_TEMPLATE}`,
+          formData,
+          { headers: { "Content-Type": "multipart/form-data" } }
+        );
+    
+        console.log(response.data);
+        setResponse([response.data]);
+        setMessage('File uploaded successfully!');
+      } catch (error) {
+        console.error('Error uploading file:', error);
+        setMessage('Error uploading file. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    }else {
       try {
         const response = await axios.post(
           `${import.meta.env.VITE_REPORT_TEMPLATE}`, 
@@ -74,6 +91,7 @@ export const Templates = () => {
       } finally {
         setLoading(false);
       }
+    }
     };
     console.log(response);
   
@@ -83,7 +101,7 @@ export const Templates = () => {
       <>
         <div className="file-upload-container bg-gray-100 p-6 rounded-lg shadow-md">
           <h2>Upload DOCX File</h2>
-          
+
           <form onSubmit={handleSubmit} encType="multipart/form-data">
             <div className="form-group">
               <input
@@ -94,17 +112,28 @@ export const Templates = () => {
                 name="templateFile"
               />
             </div>
-            <button
-              type="submit"
-              className="upload-button my-4 bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors"
-              disabled={loading}
-            >
-              {loading ? "Uploading..." : "Upload"}
-            </button>
+            <span className='flex   items-center justify-center  gap-5'>
+              <button
+                type="submit"
+                className="upload-button my-4 bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors"
+                disabled={loading}
+                onClick={() => setUploadToDB(false)}
+              >
+                {loading ? "Uploading..." : "Upload  in Form"}
+              </button>
+              <button
+                type="submit"
+                className="upload-button my-4 bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors"
+                disabled={loading}
+                onClick={() => setUploadToDB(true)}
+              >
+                {loading ? "Uploading..." : "Upload Only"}
+              </button>
+            </span>
           </form>
           {message && <p className="message">{message}</p>}
         </div>
-        {response && (
+        {response && !uploadToDB && (
           <section className="docFormSection">
             <form
               onSubmit={docFormHandler}

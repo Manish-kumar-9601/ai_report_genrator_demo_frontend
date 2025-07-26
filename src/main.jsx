@@ -6,6 +6,7 @@ import { App } from './App'
 import {BrowserRouter as Router, Route, Routes } from 'react-router';
 import { Templates } from './pages/templates';
 import { Navbar } from './components/Navbar';
+import { TemplateList } from './pages/TemplateList';
 
  
 
@@ -17,6 +18,7 @@ createRoot(document.getElementById('root')).render(
     <Routes>
       <Route path="/" index element={<Templates />} />
       <Route path="/template" element={<Templates />} />
+      <Route path="/templateList" element={<TemplateList />} />
     </Routes>
   </Router>
   </StrictMode>,

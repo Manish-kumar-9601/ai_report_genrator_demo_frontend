@@ -15,6 +15,7 @@ export const DocViewerComponent = ({ file }) => {
       style={{
         border: "1px solid #ccc",
         height: "500px",
+        
         overflow: "scroll",
       }}
     ></div>

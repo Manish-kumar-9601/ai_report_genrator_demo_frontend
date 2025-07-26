@@ -40,40 +40,27 @@ const dateFormatter = (dateString) => {
 
 
   return (
-    <section className="max-w-8xl mx-auto px-4 py-8">
+    <section className="max-w-8xl mx-auto lg:px-10 md:px-5 px-3 py-10 flex justify-center">
       {loading ? (
         <p>Loading templates...</p>
       ) : error ? (
         <p className="text-red-500">{error}</p>
-      ) : (
-        <ul className="list-disc pl-2 flex gap-8 flex-wrap justify-start">
+      ) : ( 
+        <ul className="list-disc  lg:grid lg:grid-cols-2  md:flex grid p-5 flex-wrap lg:w-full md:w-3xl sm:w-md md:justify-center  gap-10">
           {templates.map((template) => (
-            <div className="mx-auto" key={template.id}>
-              <div className="min-w-md py-2 bg-white shadow-md rounded-lg max-w-sm dark:bg-gray-800 dark:border-gray-700">
-                <a>
-                  <DocViewerComponent file={template.file_data} />
-                </a>
-                <div className="px-5 pb-5">
-                  <h3 className=" text-xl text-gray-900 font-semibold  tracking-tight dark:text-white">
-                    {template.title}
-                  </h3>
-                  <h2 className="font-bold text-white flex gap-3">
-                    Created At:
-                    <span className=" font-semibold text-gray-900 dark:text-white">
-                      {dateFormatter(template.createdAt)}
-                    </span>
-                  </h2>
-                  <div className="flex items-center mt-2.5 mb-5">
-                    <div className="flex items-center justify-between"></div>
+            <div
+              className="bg-white rounded-xl shadow-lg overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-xl cursor-pointer"
+              key={template._id}
+            >
+              <DocViewerComponent file={template.file_data} />
 
-                    <a
-                      href="#"
-                      className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                    >
-                      Use
-                    </a>
-                  </div>
-                </div>
+              <div className="p-4 bg-orange-500 text-white rounded-b-xl">
+                <h3 className="text-lg font-semibold truncate">
+                  {template.title}
+                </h3>
+                <p className="text-sm opacity-90">
+                  {dateFormatter(template.createdAt)}
+                </p>
               </div>
             </div>
           ))}

@@ -1,6 +1,6 @@
 ﻿import axios from 'axios';
 import { useState } from 'react';
-import { DocViewerComponent } from '../components/DocViewerComponent';
+
 
 export const Templates = () => {
     const [file, setFile] = useState(null);

@@ -1,144 +1,169 @@
-import React, { useEffect, useRef, useState } from 'react'
-import './App.css'
-import Input from './Input';
-// import { socket } from './socket';
-import { renderAsync } from 'docx-preview'
-export const App = () =>
-{
-  const viewerRef = useRef(null)
-  const [docTitle, setDocTitle] = useState('doc')
-  const [reportDetails, setReportDetails] = useState('')
-  const [reportPreview, setReportPreview] = useState(null)
-  const [getreport, setGetReport] = useState([])
-  const [loader, setLoader] = useState(false);
-  
-  const [change, setChange] = useState(0)
-  const [error, setError] = useState('')
-  const [docxContent, setDocxContent] = useState(null);
- 
-  const handleDownloadAndPreview = async () =>
-  {
-    try
-    {
-      // Fetch the document from your API
-      const response = await fetch('http://localhost:3000/api/v1/report-preview');
-      if (!response.ok)
-      {
-        throw new Error('Failed to fetch document');
-      }
+import { Link, Outlet } from "react-router";
 
-      // Get the document as ArrayBuffer
-      const arrayBuffer = await response.arrayBuffer();
+// Navbar Component
 
-      // Store the content for potential reuse
-      setDocxContent(arrayBuffer);
-
-      // Render the preview
-      await renderAsync(arrayBuffer, viewerRef.current);
-      setError("");
-    } catch (err)
-    {
-      setError("An error occurred while processing the document");
-      console.error(err);
-    }
-  };
-
-  const formHandler = async (e) =>
-  {
-    e.preventDefault();
-    try
-    {
-      if (!reportDetails)
-      {
-        return console.log('all field required');
-      }
-      setLoader(true)
-
-      const response = await fetch(import.meta.env.VITE_REPORT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          docTitle, reportDetails
-        })
-      }).then((res) =>
-      {
-        console.log(res);
-        if (res.status === 200)
-        {
-          setGetReport(res?.result)
-          handleDownloadAndPreview()
-          setLoader(false)
-        }
-        // setTimeout(()=>{
-        //   link.click()
-        // },1000)
-      })
-
-      console.log(response);
-    } catch (error)
-    {
-      console.log(error);
-    }
-  }
- 
-   
-
-
+// Hero Section Component
+const HeroSection = () => {
   return (
     <>
-      {
-        loader ? <div className="loader absolute right-[50%] left-[50%] top-[40%] " >
-          <div className="circle"></div>
-          <div className="circle"></div>
-          <div className="circle"></div>
-          <div className="circle"></div>
+      <section className="bg-gradient-to-r from-orange-400 to-orange-600 text-white py-20 px-4 rounded-lg shadow-lg mx-auto  max-w-7xl">
+        <div className="container mx-auto text-center">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight mb-4">
+            Web-based Document Generator
+          </h1>
+          <p className="text-lg sm:text-xl mb-8 max-w-2xl mx-auto">
+            Create customized documents using Word templates and user input.
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+            <Link
+              to={"/templateCreate"}
+              className="bg-white text-orange-600 hover:bg-gray-100 font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+            >
+              + Create New
+            </Link>
+            <Link
+              to={"/templateList"}
+              className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-orange-600 font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+            >
+              Choose Template
+            </Link>
+          </div>
         </div>
-          : <>
-            {
-              docxContent ? 
-              
-              // <div ref={viewerRef} className='transition'
-              //   style={{
-
-              //     padding: "8px",
-              //     height: "80vh",
-              //     overflow: "scroll"
-              //   }}
-              // >
-              // </div>
-              <></>
-               : <>
-              </>
-            }
-          </>
-      }
-      <Input formHandler={formHandler} setLoader={setLoader} setReportDetails={setReportDetails}     />
-
-      {/* <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={formHandler} >
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="doc title">
-              doc title
-            </label>
-            <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="doc title" onChange={(e) => setDocTitle(e.target.value)} />
-          </div>
-          <div className="mb-6">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="report_topic">
-              Report Topic
-            </label>
-            <textarea className="shadow appearance-none border   rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" type="text" placeholder="report topic" onChange={(e) => setReportDetails(e.target.value)} />
-           
-          </div>
-          <div className="flex items-center justify-between">
-            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
-              run
-            </button>
-            <a onClick={()=>setLoader(false)} className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" href={import.meta.env.VITE_DOWNLOAD_REPORT}  download>
-              download
-            </a>
-          </div>
-        </form> */}
-
-
+      </section>
+      <Outlet />
     </>
-  )
-}
+  );
+};
+
+// Document Card Component
+const DocumentCard = ({ title, date, imageUrl }) => {
+  return (
+    <div className="bg-white rounded-xl shadow-lg overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-xl cursor-pointer">
+      <img
+        src={imageUrl}
+        alt={title}
+        className="w-full h-48 object-cover object-top rounded-t-xl"
+        onError={(e) => {
+          e.target.onerror = null;
+          e.target.src = `https://placehold.co/300x192/E5E7EB/4B5563?text=${encodeURIComponent(
+            title
+          )}`;
+        }}
+      />
+      <div className="p-4 bg-orange-500 text-white rounded-b-xl">
+        <h3 className="text-lg font-semibold truncate">{title}</h3>
+        <p className="text-sm opacity-90">{date}</p>
+      </div>
+    </div>
+  );
+};
+
+// Recent Documents Section
+const RecentDocuments = () => {
+  const recentDocs = [
+    {
+      title: "Company-letter",
+      date: "10 Mar 2025",
+      imageUrl:
+        "https://placehold.co/300x192/E5E7EB/4B5563?text=Company-letter",
+    },
+    {
+      title: "Resume",
+      date: "15 Mar 2024",
+      imageUrl: "https://placehold.co/300x192/E5E7EB/4B5563?text=Resume",
+    },
+    {
+      title: "Bio-Data",
+      date: "10 Feb 2024",
+      imageUrl: "https://placehold.co/300x192/E5E7EB/4B5563?text=Bio-Data",
+    },
+    {
+      title: "Business Report",
+      date: "02 May 2021",
+      imageUrl:
+        "https://placehold.co/300x192/E5E7EB/4B5563?text=Business+Report",
+    },
+    {
+      title: "Project Report",
+      date: "10 Mar 2025",
+      imageUrl:
+        "https://placehold.co/300x192/E5E7EB/4B5563?text=Project+Report",
+    },
+    {
+      title: "College letter",
+      date: "10 Mar 2025",
+      imageUrl:
+        "https://placehold.co/300x192/E5E7EB/4B5563?text=College+Letter",
+    },
+    {
+      title: "Notice",
+      date: "16 Fall 2025",
+      imageUrl: "https://placehold.co/300x192/E5E7EB/4B5563?text=Notice",
+    },
+    {
+      title: "Company-letter",
+      date: "10 Mar 2025",
+      imageUrl:
+        "https://placehold.co/300x192/E5E7EB/4B5563?text=Company-letter",
+    },
+  ];
+
+  return (
+    <section className="container mx-auto py-12 px-4">
+      <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
+        Recent Documents
+      </h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        {recentDocs.map((doc, index) => (
+          <DocumentCard
+            key={index}
+            title={doc.title}
+            date={doc.date}
+            imageUrl={doc.imageUrl}
+          />
+        ))}
+      </div>
+    </section>
+  );
+};
+
+// Footer Component
+const Footer = () => {
+  return (
+    <footer className="bg-gray-800 text-white py-10 rounded-t-lg shadow-inner mt-12">
+      <div className="container mx-auto px-4 text-center">
+        <div className="flex flex-col md:flex-row justify-center md:space-x-8 space-y-4 md:space-y-0 mb-6">
+          <a href="#" className="hover:text-orange-400 transition duration-300">
+            About
+          </a>
+          <a href="#" className="hover:text-orange-400 transition duration-300">
+            Terms and Conditions
+          </a>
+          <a href="#" className="hover:text-orange-400 transition duration-300">
+            Privacy Policy
+          </a>
+          <a href="#" className="hover:text-orange-400 transition duration-300">
+            Contact us
+          </a>
+        </div>
+        <p className="text-sm text-gray-400">
+          &copy; {new Date().getFullYear()} DocGen. All rights reserved.
+        </p>
+      </div>
+    </footer>
+  );
+};
+
+// Main App Component
+export const App = () => {
+  return (
+    <div className="min-h-screen bg-gray-100 font-sans antialiased">
+      {/* <Navbar /> */}
+      <main>
+        <HeroSection />
+        <RecentDocuments />
+      </main>
+      <Footer />
+    </div>
+  );
+};

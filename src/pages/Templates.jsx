@@ -1,5 +1,6 @@
 ﻿import axios from 'axios';
 import { useState } from 'react';
+import { DocViewerComponent } from '../components/DocViewerComponent';
 
 export const Templates = () => {
     const [file, setFile] = useState(null);
@@ -80,67 +81,80 @@ export const Templates = () => {
    
     return (
       <>
-      <div className="file-upload-container bg-gray-100 p-6 rounded-lg shadow-md">
-        <h2>Upload DOCX File</h2>
-        <form onSubmit={handleSubmit} encType='multipart/form-data'>
-          <div className="form-group">
-            <input   
-              type="file" 
-              onChange={handleFileChange} 
-              className="bg-white border border-gray-300 rounded p-2 w-full"
-              accept=".docx, .doc"
-              name="templateFile"
-              />
-          </div>
-          <button 
-            type="submit" 
-            className="upload-button my-4 bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors"
-            disabled={loading}
-            >
-            {loading ? 'Uploading...' : 'Upload'}
-          </button>
-        </form>
-        {message && <p className="message">{message}</p>}
-      </div>
-      {
-        response && 
-      
-      <section className="docFormSection">
-        <form  onSubmit={docFormHandler} className="bg-gray-50 p-6 rounded-lg shadow-md">
-          <h2 className="text-2xl font-bold mb-4">Document Parameters</h2>
-          {response && response[0]?.parameters && response[0].parameters.map((param, index) => (
-            <div key={index} className="mb-4 p-4 bg-white shadow rounded">
-              <label className="block text-sm font-medium text-gray-700">
-                {param}
-              </label>
+        <div className="file-upload-container bg-gray-100 p-6 rounded-lg shadow-md">
+          <h2>Upload DOCX File</h2>
+          
+          <form onSubmit={handleSubmit} encType="multipart/form-data">
+            <div className="form-group">
               <input
-           onChange={(e)=>setDocForm({
-            ...docForm,[param]: e.target.value})}
-                type="text"
-                name={param}
-                id={param}
-                required
-                placeholder={`Enter ${param}`}
-                className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                type="file"
+                onChange={handleFileChange}
+                className="bg-white border border-gray-300 rounded p-2 w-full"
+                accept=".docx, .doc"
+                name="templateFile"
               />
             </div>
-          ))}
-            <div className="flex items-center justify-between">
-          <button 
-            type="submit" 
-            className="bg-green-500 text-white p-2 rounded hover:bg-green-600 transition-colors"
-          >
-            Generate Document
-          </button>
-            {/* {error && <p className="text-red-500">{error}</p>} */}
-        { loader &&    <a  className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" href={import.meta.env.VITE_REPORT_DOWNLOAD_DOC}  download>
-              download
-            </a>}
-          </div>
-        </form>
-    
-      </section>
-}
-            </>
+            <button
+              type="submit"
+              className="upload-button my-4 bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors"
+              disabled={loading}
+            >
+              {loading ? "Uploading..." : "Upload"}
+            </button>
+          </form>
+          {message && <p className="message">{message}</p>}
+        </div>
+        {response && (
+          <section className="docFormSection">
+            <form
+              onSubmit={docFormHandler}
+              className="bg-gray-50 p-6 rounded-lg shadow-md"
+            >
+              <h2 className="text-2xl font-bold mb-4">Document Parameters</h2>
+              {response &&
+                response[0]?.parameters &&
+                response[0].parameters.map((param, index) => (
+                  <div key={index} className="mb-4 p-4 bg-white shadow rounded">
+                    <label className="block text-sm font-medium text-gray-700">
+                      {param}
+                    </label>
+                    <input
+                      onChange={(e) =>
+                        setDocForm({
+                          ...docForm,
+                          [param]: e.target.value,
+                        })
+                      }
+                      type="text"
+                      name={param}
+                      id={param}
+                      required
+                      placeholder={`Enter ${param}`}
+                      className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                    />
+                  </div>
+                ))}
+              <div className="flex items-center justify-between">
+                <button
+                  type="submit"
+                  className="bg-green-500 text-white p-2 rounded hover:bg-green-600 transition-colors"
+                >
+                  Generate Document
+                </button>
+                {/* {error && <p className="text-red-500">{error}</p>} */}
+                {loader && (
+                  <a
+                    className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
+                    href={import.meta.env.VITE_REPORT_DOWNLOAD_DOC}
+                    download
+                  >
+                    download
+                  </a>
+                )}
+              </div>
+            </form>
+          </section>
+        )}
+      </>
     );
   };

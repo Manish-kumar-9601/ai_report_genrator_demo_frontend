@@ -40,12 +40,12 @@ export const Navbar = () => {
            >
              About
            </Link>
-           <a
-             href="#"
+           <Link
+             to={'/contactUs'}
              className="text-gray-600 hover:text-orange-500 font-medium"
            >
              Contact us
-           </a>
+           </Link>
          </div>
 
          {/* Mobile Menu Button (Hamburger) */}

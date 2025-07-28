@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { renderAsync } from "docx-preview";
 export const DocViewerComponent = ({ file }) => {
   const viewerRef = useRef(null);
@@ -6,9 +6,14 @@ export const DocViewerComponent = ({ file }) => {
     console.error("No file provided to DocViewerComponent");
     return;
   }
-  renderAsync(file["data"], viewerRef.current).catch(() => {
-    console.error("Error rendering document");
-  });
+  useEffect(() => {
+    if (viewerRef.current) {
+      renderAsync(file["data"], viewerRef.current).catch(() => {
+        console.error("Error rendering document");
+      });
+    }
+  }, [file]);
+ 
   return (
     <div
       ref={viewerRef}

@@ -7,8 +7,12 @@ import { Navbar } from './components/Navbar';
 import { TemplateList } from './pages/TemplateList';
 import { App } from './App';
 import { ContactUsPage } from './pages/ContactUs';
-import { Footer } from './components/Footer';
 import { Templates } from './pages/Templates';
+import { UserProvider } from '../context/UserContext';
+import { SignupPage } from './pages/SignUp';
+import { LoginPage } from './pages/login';
+import { AboutPage } from './pages/About';
+ 
 
  
 
@@ -16,14 +20,18 @@ import { Templates } from './pages/Templates';
 createRoot(document.getElementById('root')).render(
   <StrictMode>
    <Router>
+    <UserProvider>
     <Navbar/>
     <Routes>
       <Route path="/" index element={<App />} />
       <Route path="/templateCreate" element={<Templates />} />
       <Route path="/templateList" element={<TemplateList />} />
       <Route path="/contactUs" element={<ContactUsPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignupPage />} />
+      <Route path="/about" element={<AboutPage/>} />
     </Routes>
-  
+  </UserProvider>
   </Router>
   </StrictMode>,
 )

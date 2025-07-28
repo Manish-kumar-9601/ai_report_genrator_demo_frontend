@@ -1,13 +1,34 @@
 import { Link, Outlet } from "react-router";
-import { Footer } from "./components/Footer";
+// Assuming Footer and Navbar are separate components that might also need theme adjustments
+// import { Footer } from "./components/Footer";
 
-// Navbar Component
+// Mock Footer Component for demonstration
+const Footer = () => {
+  return (
+    <footer className="bg-[#003366] text-white py-6 mt-12">
+      {" "}
+      {/* BMU Blue background */}
+      <div className="container mx-auto text-center">
+        <p className="text-sm">
+          &copy; {new Date().getFullYear()} Bhagwan Mahavir University. All
+          rights reserved.
+        </p>
+        <p className="text-sm mt-2">
+          Designed with <span className="text-[#FF6600]">&hearts;</span> for BMU
+        </p>{" "}
+        {/* BMU Orange heart */}
+      </div>
+    </footer>
+  );
+};
 
 // Hero Section Component
 const HeroSection = () => {
   return (
     <>
-      <section className="bg-gradient-to-r from-orange-400 to-orange-600 text-white py-20 px-4 rounded-lg shadow-lg mx-auto  max-w-7xl">
+      <section className="bg-gradient-to-r from-[#003366] to-[#002244] text-white py-20 px-4 rounded-lg shadow-lg mx-auto max-w-7xl">
+        {" "}
+        {/* BMU Blue gradient */}
         <div className="container mx-auto text-center">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight mb-4">
             Web-based Document Generator
@@ -18,13 +39,13 @@ const HeroSection = () => {
           <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
             <Link
               to={"/templateCreate"}
-              className="bg-white text-orange-600 hover:bg-gray-100 font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+              className="bg-white text-[#003366] hover:bg-gray-100 font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105" // BMU Blue text on white
             >
               + Create New
             </Link>
             <Link
               to={"/templateList"}
-              className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-orange-600 font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+              className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-[#003366] font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105" // White border, BMU Blue text on white hover
             >
               Choose Template
             </Link>
@@ -51,7 +72,9 @@ const DocumentCard = ({ title, date, imageUrl }) => {
           )}`;
         }}
       />
-      <div className="p-4 bg-orange-500 text-white rounded-b-xl">
+      <div className="p-4 bg-[#FF6600] text-white rounded-b-xl">
+        {" "}
+        {/* BMU Orange background */}
         <h3 className="text-lg font-semibold truncate">{title}</h3>
         <p className="text-sm opacity-90">{date}</p>
       </div>
@@ -111,7 +134,9 @@ const RecentDocuments = () => {
 
   return (
     <section className="container mx-auto py-12 px-4">
-      <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
+      <h2 className="text-3xl font-bold text-[#003366] mb-8 text-center">
+        {" "}
+        {/* BMU Blue heading */}
         Recent Documents
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -128,17 +153,16 @@ const RecentDocuments = () => {
   );
 };
 
-// Footer Component
-
-
 // Main App Component
 export const App = () => {
   return (
-    <div className="min-h-screen bg-gray-100 font-sans antialiased">
+    <div className="min-h-screen bg-[#F5F5F5] font-sans antialiased">
+      {" "}
+      {/* Light gray background */}
       {/* <Navbar /> */}
       <main>
         <HeroSection />
-        {/* <RecentDocuments /> */}
+        <RecentDocuments /> {/* Uncommented to display recent documents */}
       </main>
       <Footer />
     </div>

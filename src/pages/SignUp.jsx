@@ -1,7 +1,8 @@
 import axios from "axios";
-import  { useState } from "react";
+import  { useContext, useState } from "react";
 import { useNavigate } from "react-router";
 import { z } from "zod";
+import { UserContext } from "../../context/UserContext";
 
 // To make this component runnable, we'll create a simple App wrapper.
 // In a real application, you would import and use SignupPage directly.
@@ -10,6 +11,7 @@ export default function App() {
 }
 
 export const SignupPage = () => {
+  const { setUser, setToken, setIsAuthenticated } = useContext(UserContext);
     const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
@@ -31,15 +33,15 @@ export const SignupPage = () => {
       email: z.string().email("Invalid email address"),
       password: z
         .string()
-        // .min(8, "Password must be at least 8 characters long")
-        // .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-        // .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-        // .regex(/[0-9]/, "Password must contain at least one number")
-        // .regex(
-        //   /[^a-zA-Z0-9]/,
-        //   "Password must contain at least one special character"
-        // ),
-        ,
+        .min(8, "Password must be at least 8 characters long")
+        .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+        .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+        .regex(/[0-9]/, "Password must contain at least one number")
+        .regex(
+          /[^a-zA-Z0-9]/,
+          "Password must contain at least one special character"
+        ),
+        
       confirmPassword: z.string(),
     })
     .refine((data) => data.password === data.confirmPassword, {
@@ -83,7 +85,22 @@ export const SignupPage = () => {
         })
         .then((response) => {
           console.log("Sign up successful:", response.data)
-          navigate("/login"); // Redirect to login page after successful sign up
+           setUser(
+             localStorage.setItem(
+               "user",
+               JSON.stringify({
+                 department: response.data.department,
+                 email: response.data.email,
+                 id: response.data.id,
+                 roles: response.data.roles,
+                 username: response.data.username,
+               })
+             )
+           );
+
+           setIsAuthenticated(localStorage.setItem("isAuth", true));
+           setToken(localStorage.setItem("jwtToken", response.data.accessToken));
+          navigate("/"); // Redirect to login page after successful sign up
         })
         
         .catch((error) => {

@@ -42,7 +42,8 @@ export const TemplateList = () => {
   const [loader, setLoader] = useState(false);
   const [message, setMessage] = useState("");
   const [docForm, setDocForm] = useState({});
-  const username=JSON.parse(user).username || null;
+  const username=user.username || null;
+  const [toggle, setToggle] = useState(false);
   console.log(username, "username in TemplateList");
   const docFormHandler = async (e) => {
     e.preventDefault();
@@ -219,54 +220,41 @@ export const TemplateList = () => {
           <p className="text-red-500">{error}</p>
         ) : (
           <>
+     
+ 
+
             <ul
               className={` list-disc  lg:grid lg:grid-cols-2  md:flex grid p-5 flex-wrap lg:w-full md:w-3xl sm:w-md md:justify-center  gap-10`}
             >
-              {templates.map((template) => (
-                <div
-                  className="bg-white rounded-xl shadow-lg overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-xl cursor-pointer"
-                  key={template.id}
-                >
-                  <DocViewerComponent file={template.file_data} />
+              {templates
+                .filter((i) => i.uploadedBy== username)
+                .map((template) => (
+                  <div
+                    className="bg-white rounded-xl shadow-lg overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-xl cursor-pointer"
+                    key={template.id}
+                  >
+                    <DocViewerComponent file={template.file_data} />
 
-                  <div className="p-4 bg-orange-500 text-white rounded-b-xl">
-                    <span>
-                      <h3 className="text-lg font-semibold truncate">
-                        {template.title}
-                      </h3>
-                      <p className="text-sm opacity-90">
-                        {dateFormatter(template.createdAt)}
-                      </p>
-                      {template.uploadedBy && (
+                    <div className="p-4 bg-orange-500 text-white rounded-b-xl">
+                      <span>
+                        <h3 className="text-lg font-semibold truncate">
+                          {template.title}
+                        </h3>
                         <p className="text-sm opacity-90">
-                          Uploaded by: {template.uploadedBy}
+                          {dateFormatter(template.createdAt)}
                         </p>
-                      )}
-                    </span>
-                    <span className="flex justify-evenly flex-wrap gap-2 space-x-2 mt-2">
-                      <UseButton
-                        onClick={() =>
-                          handleUse(template.title, template.file_data)
-                        }
-                      >
-                        <svg
-                          className="w-5 h-5 inline-block mr-2"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg"
+                        {template.uploadedBy && (
+                          <p className="text-sm opacity-90">
+                            Uploaded by: {template.uploadedBy}
+                          </p>
+                        )}
+                      </span>
+                      <span className="flex justify-evenly flex-wrap gap-2 space-x-2 mt-2">
+                        <UseButton
+                          onClick={() =>
+                            handleUse(template.title, template.file_data)
+                          }
                         >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M15 13l-3 3m0 0l-3-3m3 3V8m0 8a9 9 0 110-18 9 9 0 010 18z"
-                          ></path>
-                        </svg>
-                        Use Document
-                      </UseButton>
-                      {isAuthenticated && template.uploadedBy ==username ? (
-                        <DeleteButton onClick={() => handleDelete(template)}>
                           <svg
                             className="w-5 h-5 inline-block mr-2"
                             fill="none"
@@ -278,18 +266,36 @@ export const TemplateList = () => {
                               strokeLinecap="round"
                               strokeLinejoin="round"
                               strokeWidth="2"
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                              d="M15 13l-3 3m0 0l-3-3m3 3V8m0 8a9 9 0 110-18 9 9 0 010 18z"
                             ></path>
                           </svg>
-                          Delete Document
-                        </DeleteButton>
-                      ) : (
-                        <></>
-                      )}
-                    </span>
+                          Use Document
+                        </UseButton>
+                        {isAuthenticated && template.uploadedBy == username ? (
+                          <DeleteButton onClick={() => handleDelete(template)}>
+                            <svg
+                              className="w-5 h-5 inline-block mr-2"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                              ></path>
+                            </svg>
+                            Delete Document
+                          </DeleteButton>
+                        ) : (
+                          <></>
+                        )}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </ul>
           </>
         )}

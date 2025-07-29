@@ -1,6 +1,6 @@
 ﻿import axios from "axios";
 import { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 import { UserContext } from "../../context/UserContext";
 
 export const Templates = () => {
@@ -12,11 +12,13 @@ export const Templates = () => {
   const [docForm, setDocForm] = useState([]);
   const [uploadToDB, setUploadToDB] = useState(false);
   const [loader, setLoader] = useState(false);
-   const { user } = useContext(UserContext);
-   const username = user ? JSON.parse(user).username : null;
-  
+   const {  user, isAuthenticated } = useContext(UserContext);
+    console.log(!isAuthenticated);
+    if (!isAuthenticated) {
+      return   navigate("/login");
+    }
   const docFormHandler = async (e) => {
- 
+    
     e.preventDefault();
     console.log("docForm", docForm);
     if (!docForm) {
@@ -58,9 +60,9 @@ export const Templates = () => {
     setLoading(true);
     
     const formData = new FormData();
-    console.log(username, "username in handleSubmit");
+    console.log(user.username, "username in handleSubmit");
     formData.append("templateFile", file); 
-    formData.append("username", username);
+    formData.append("username", user.username);
     console.log(formData.get("templateFile"));
     if (uploadToDB) {
       try {

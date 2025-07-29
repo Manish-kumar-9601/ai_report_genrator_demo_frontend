@@ -12,17 +12,24 @@ const loginSchema = z.object({
 
 export const LoginPage = () => {
   const navigate = useNavigate();
-  const {  setUser, setToken, setIsAuthenticated } =
-    useContext(UserContext);
+  // Destructure the setters directly. No need to manage localStorage here.
+  const {
+    setUser,
+    setToken,
+    setIsAuthenticated,
+    setLoading: setContextLoading,
+  } = useContext(UserContext); // If you want to set the global loading state
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
+  const [localLoading, setLocalLoading] = useState(false); // Use a local loading state for the form submission
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors({});
-    setLoading(true);
+    setLocalLoading(true); // Start local loading for the form
+    // setContextLoading(true); // Uncomment if you want to set a global loading state during login
 
     try {
       loginSchema.parse({ email, password });
@@ -36,34 +43,27 @@ export const LoginPage = () => {
       axios.defaults.headers.common["Authorization"] =
         "Bearer " + res.data.token;
       const resData = res.data;
-      console.log(
-        "Response data:",
-        resData.department,
-        resData.email,
-        resData.id,
-        resData.roles,
-        resData.username
-      );
-      setUser(
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            department: resData.department,
-            email: resData.email,
-            id: resData.id,
-            roles: resData.roles,
-            username: resData.username,
-          })
-        )
-      );
 
-      setIsAuthenticated(localStorage.setItem("isAuth", true));
-      setToken(localStorage.setItem("jwtToken", resData.accessToken));
+      // --- CRITICAL FIXES HERE ---
+      // Pass the actual user object to setUser
+      setUser({
+        department: resData.department,
+        email: resData.email,
+        id: resData.id,
+        roles: resData.roles,
+        username: resData.username,
+      });
+
+      // Pass the boolean true to setIsAuthenticated
+      setIsAuthenticated(true);
+
+      // Pass the token string to setToken
+      setToken(resData.accessToken); // Assuming accessToken is the correct key for the JWT token
 
       setEmail("");
       setPassword("");
       navigate("/");
-      console.log();
+      console.log("Login state updated successfully!");
     } catch (err) {
       if (err instanceof z.ZodError) {
         const newErrors = {};
@@ -71,13 +71,18 @@ export const LoginPage = () => {
           newErrors[error.path[0]] = error.message;
         });
         setErrors(newErrors);
-      } else if (err.response) {
+      } else if (axios.isAxiosError(err) && err.response) {
+        // Use axios.isAxiosError for better type narrowing
         if (err.response.status === 401) {
           setErrors({
             api: "Invalid credentials. Please check your email and password.",
           });
         } else {
-          setErrors({ api: "An unexpected error occurred. Please try again." });
+          setErrors({
+            api: `An unexpected error occurred: ${
+              err.response.statusText || err.message
+            }. Please try again.`,
+          });
         }
       } else {
         setErrors({
@@ -86,7 +91,7 @@ export const LoginPage = () => {
       }
       console.error("Login error:", err);
     } finally {
-      setLoading(false);
+      setLocalLoading(false); 
     }
   };
 
@@ -121,7 +126,7 @@ export const LoginPage = () => {
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              disabled={loading}
+              disabled={localLoading}
             />
             {errors.email && (
               <p className="mt-2 text-sm text-red-600">{errors.email}</p>
@@ -144,7 +149,7 @@ export const LoginPage = () => {
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              disabled={loading}
+              disabled={localLoading}
             />
             {errors.password && (
               <p className="mt-2 text-sm text-red-600">{errors.password}</p>
@@ -164,9 +169,9 @@ export const LoginPage = () => {
           <button
             type="submit"
             className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-lg text-lg font-semibold text-white bg-gradient-to-r from-[#fdc50b] to-[#f16304] hover:from-[#f7cd14] hover:to-[#ff6302] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FF6600] transition-all duration-300 transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={loading}
+            disabled={localLoading}
           >
-            {loading ? (
+            {localLoading ? (
               <svg
                 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
                 xmlns="http://www.w3.org/2000/svg"

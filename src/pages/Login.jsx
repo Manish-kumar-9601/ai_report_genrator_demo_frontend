@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import z from "zod";
 import axios from "axios";
 import { UserContext } from "../../context/UserContext";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 // Zod schema for login validation
 const loginSchema = z.object({
@@ -11,8 +11,9 @@ const loginSchema = z.object({
 });
 
 export const LoginPage = () => {
-    const navigate = useNavigate();
-  const { setUser } = useContext(UserContext);
+  const navigate = useNavigate();
+  const {  setUser, setToken, setIsAuthenticated } =
+    useContext(UserContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
@@ -25,20 +26,44 @@ export const LoginPage = () => {
 
     try {
       loginSchema.parse({ email, password });
-       
+
       const res = await axios.post(import.meta.env.VITE_REPORT_LOGIN, {
-         email,
-        password
+        email,
+        password,
       });
       console.log("Login successful:", res.data);
-      localStorage.setItem("jwtToken", res.data.token);
+
       axios.defaults.headers.common["Authorization"] =
         "Bearer " + res.data.token;
-      setUser({ auth: true, name: res.data.email });
+      const resData = res.data;
+      console.log(
+        "Response data:",
+        resData.department,
+        resData.email,
+        resData.id,
+        resData.roles,
+        resData.username
+      );
+      setUser(
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            department: resData.department,
+            email: resData.email,
+            id: resData.id,
+            roles: resData.roles,
+            username: resData.username,
+          })
+        )
+      );
+
+      setIsAuthenticated(localStorage.setItem("isAuth", true));
+      setToken(localStorage.setItem("jwtToken", resData.accessToken));
 
       setEmail("");
       setPassword("");
-      navigate("/");  
+      navigate("/");
+      console.log();
     } catch (err) {
       if (err instanceof z.ZodError) {
         const newErrors = {};
@@ -169,12 +194,12 @@ export const LoginPage = () => {
         </form>
         <p className="mt-8 text-center text-gray-600 text-sm">
           Don't have an account?{" "}
-          <a
-            href="#"
+          <Link
+            to="/signup"
             className="font-medium text-[#003366] hover:text-[#FF6600]"
           >
             Sign up
-          </a>
+          </Link>
         </p>
       </div>
     </div>

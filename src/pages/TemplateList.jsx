@@ -1,6 +1,7 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { DocViewerComponent } from "../components/DocViewerComponent";
+import { UserContext } from "../../context/UserContext";
 
 // import DocViewer from "react-doc-viewer";
 // import DocViewerComponent from "../components/DocViewerComponent";
@@ -31,6 +32,7 @@ const DeleteButton = ({ onClick, children }) => {
 };
 
 export const TemplateList = () => {
+  const { isAuthenticated,user}=useContext(UserContext)
   const [templates, setTemplates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -40,6 +42,8 @@ export const TemplateList = () => {
   const [loader, setLoader] = useState(false);
   const [message, setMessage] = useState("");
   const [docForm, setDocForm] = useState({});
+  const username=JSON.parse(user).username || null;
+  console.log(username, "username in TemplateList");
   const docFormHandler = async (e) => {
     e.preventDefault();
     console.log("docForm", docForm);
@@ -146,7 +150,8 @@ export const TemplateList = () => {
             <span className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-bold mb-4">Document Parameters</h2>
 
-              <button onClick={() => setPopupForm(false)}  
+              <button
+                onClick={() => setPopupForm(false)}
                 type="button"
                 className="relative border-2 border-black group hover:border-red-500 w-12 h-12 duration-500 overflow-hidden"
               >
@@ -260,23 +265,27 @@ export const TemplateList = () => {
                         </svg>
                         Use Document
                       </UseButton>
-                      <DeleteButton onClick={() => handleDelete(template)}>
-                        <svg
-                          className="w-5 h-5 inline-block mr-2"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                          ></path>
-                        </svg>
-                        Delete Document
-                      </DeleteButton>
+                      {isAuthenticated && template.uploadedBy ==username ? (
+                        <DeleteButton onClick={() => handleDelete(template)}>
+                          <svg
+                            className="w-5 h-5 inline-block mr-2"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            ></path>
+                          </svg>
+                          Delete Document
+                        </DeleteButton>
+                      ) : (
+                        <></>
+                      )}
                     </span>
                   </div>
                 </div>

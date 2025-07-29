@@ -1,11 +1,13 @@
-import { Link, Outlet } from "react-router";
+import { Link, Outlet,   } from "react-router";
+import { UserContext } from "../context/UserContext";
+import { useContext } from "react";
 // Assuming Footer and Navbar are separate components that might also need theme adjustments
 // import { Footer } from "./components/Footer";
 
 // Mock Footer Component for demonstration
 const Footer = () => {
   return (
-    <footer className="bg-[#003366] text-white py-6 mt-12">
+    <footer className="absolute w-full bottom-0 bg-[#003366] text-white py-6 mt-12">
       {" "}
       {/* BMU Blue background */}
       <div className="container mx-auto text-center">
@@ -15,8 +17,8 @@ const Footer = () => {
         </p>
         <p className="text-sm mt-2">
           Designed with <span className="text-[#FF6600]">&hearts;</span> for BMU
-        </p>{" "}
-        {/* BMU Orange heart */}
+        </p>
+     
       </div>
     </footer>
   );
@@ -24,6 +26,9 @@ const Footer = () => {
 
 // Hero Section Component
 const HeroSection = () => {
+ const {   isAuthenticated } = useContext(UserContext);
+ console.log(isAuthenticated);
+ 
   return (
     <>
       <section className="bg-gradient-to-r from-[#003366] to-[#002244] text-white py-20 px-4 rounded-lg shadow-lg mx-auto max-w-7xl">
@@ -38,7 +43,8 @@ const HeroSection = () => {
           </p>
           <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
             <Link
-              to={"/templateCreate"}
+              to={`${isAuthenticated ? "/templateCreate" : "/login"}`}
+           
               className="bg-white text-[#003366] hover:bg-gray-100 font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105" // BMU Blue text on white
             >
               + Create New
@@ -157,12 +163,9 @@ const RecentDocuments = () => {
 export const App = () => {
   return (
     <div className="min-h-screen bg-[#F5F5F5] font-sans antialiased">
-      {" "}
-      {/* Light gray background */}
-      {/* <Navbar /> */}
       <main>
         <HeroSection />
-        <RecentDocuments /> {/* Uncommented to display recent documents */}
+        {/* <RecentDocuments />  */}
       </main>
       <Footer />
     </div>

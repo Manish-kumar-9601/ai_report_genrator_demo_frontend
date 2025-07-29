@@ -1,6 +1,7 @@
 ﻿import axios from "axios";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../../context/UserContext";
 
 export const Templates = () => {
   const navigate = useNavigate();
@@ -11,8 +12,11 @@ export const Templates = () => {
   const [docForm, setDocForm] = useState([]);
   const [uploadToDB, setUploadToDB] = useState(false);
   const [loader, setLoader] = useState(false);
-
+   const { user } = useContext(UserContext);
+   const username = user ? JSON.parse(user).username : null;
+  
   const docFormHandler = async (e) => {
+ 
     e.preventDefault();
     console.log("docForm", docForm);
     if (!docForm) {
@@ -52,9 +56,11 @@ export const Templates = () => {
     }
 
     setLoading(true);
-
+    
     const formData = new FormData();
-    formData.append("templateFile", file); // Make sure the field name matches backend's `upload.single("templateFile")`
+    console.log(username, "username in handleSubmit");
+    formData.append("templateFile", file); 
+    formData.append("username", username);
     console.log(formData.get("templateFile"));
     if (uploadToDB) {
       try {
@@ -63,6 +69,7 @@ export const Templates = () => {
           formData,
           { headers: { "Content-Type": "multipart/form-data" } }
         );
+      
         navigate("/templateList");
         console.log(response.data);
         setResponse([response.data]);

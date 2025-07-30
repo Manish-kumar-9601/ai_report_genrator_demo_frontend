@@ -40,8 +40,8 @@ const DocumentToggle = ({ setShowOnlyMine,showOnlyMine }) => {
     <div className="flex items-center gap-3  lg:ml-20 md:ml-10 ml-5" >
       <label htmlFor="docToggle" className="text-sm font-medium text-gray-700">
         {showOnlyMine
-          ? "Showing: Only Your Documents"
-          : "Showing: All Documents"}
+          ? "Showing: My   "
+          : "Showing: All "}
       </label>
       <button
         id="docToggle"

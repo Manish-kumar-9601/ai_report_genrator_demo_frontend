@@ -31,8 +31,37 @@ const DeleteButton = ({ onClick, children }) => {
   );
 };
 
+const DocumentToggle = ({ setShowOnlyMine,showOnlyMine }) => {
+
+
+ 
+
+  return (
+    <div className="flex items-center gap-3  lg:ml-20 md:ml-10 ml-5" >
+      <label htmlFor="docToggle" className="text-sm font-medium text-gray-700">
+        {showOnlyMine
+          ? "Showing: Only Your Documents"
+          : "Showing: All Documents"}
+      </label>
+      <button
+        id="docToggle"
+        onClick={()=>setShowOnlyMine(!showOnlyMine)}
+        className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${
+          showOnlyMine ? "bg-blue-600" : "bg-gray-300"
+        }`}
+      >
+        <span
+          className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
+            showOnlyMine ? "translate-x-6" : "translate-x-1"
+          }`}
+        />
+      </button>
+    </div>
+  );
+};
+
 export const TemplateList = () => {
-  const { isAuthenticated,user}=useContext(UserContext)
+  const { isAuthenticated, user } = useContext(UserContext);
   const [templates, setTemplates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -42,8 +71,20 @@ export const TemplateList = () => {
   const [loader, setLoader] = useState(false);
   const [message, setMessage] = useState("");
   const [docForm, setDocForm] = useState({});
-  const username=user.username || null;
-  const [toggle, setToggle] = useState(false);
+  const username = user?.username || null;
+  const [showOnlyMine, setShowOnlyMine] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+// console.log(
+//   templates
+//     .filter(
+//       (i) => showOnlyMine ?( i.uploadedBy ?
+//        ( typeof i.uploadedBy === "string" &&
+//         i.uploadedBy.toLowerCase().includes(searchTerm.toLowerCase()) && i.uploadedBy===username ) :true
+//     ): (i.uploadedBy?  typeof i.uploadedBy === "string" &&
+//         i.uploadedBy.toLowerCase().includes(searchTerm.toLowerCase()) :true))
+//     .map((i) => i.uploadedBy)
+// );
+
   console.log(username, "username in TemplateList");
   const docFormHandler = async (e) => {
     e.preventDefault();
@@ -93,14 +134,14 @@ export const TemplateList = () => {
     };
     return new Date(dateString).toLocaleString(undefined, options);
   };
-  const handleUse = async (fileName,file) => {
+  const handleUse = async (fileName, file) => {
     console.log(file);
-   const arrayBuffer = await file["data"]
-   const binaryData = new Uint8Array(arrayBuffer);
+    const arrayBuffer = await file["data"];
+    const binaryData = new Uint8Array(arrayBuffer);
     const blob = new Blob([binaryData], {
       type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     });
-      const formData = new FormData();
+    const formData = new FormData();
     formData.append("file", blob, `${fileName}.docx`);
     console.log("Use button clicked!", file["data"]);
     try {
@@ -115,15 +156,15 @@ export const TemplateList = () => {
       setMessage("File uploaded successfully!");
       console.log(message);
       setPopupForm(false);
-      console.log('pop',popupForm);
+      console.log("pop", popupForm);
     } catch (error) {
       console.error("Error uploading file:", error);
       // setMessage("Error uploading file. Please try again.");
     } finally {
       setLoading(false);
-        setMessage("File uploaded successfully!");
-        console.log(message);
-        setPopupForm(true);
+      setMessage("File uploaded successfully!");
+      console.log(message);
+      setPopupForm(true);
     }
   };
 
@@ -219,16 +260,26 @@ export const TemplateList = () => {
         ) : error ? (
           <p className="text-red-500">{error}</p>
         ) : (
-          <>
-     
- 
+          <section className="w-full">
+            <div className=" text-gray-600  items-center flex justify-between gpa-10">
+              <input
+                type="search"
+                name="search"
+                placeholder="Search"
+                className="bg-white  flex-1   shadow-md h-10 px-5 pr-10 rounded-full text-sm focus:outline-none"
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <DocumentToggle
+                setShowOnlyMine={setShowOnlyMine}
+                showOnlyMine={showOnlyMine}
+              />
+            </div>
 
             <ul
               className={` list-disc  lg:grid lg:grid-cols-2  md:flex grid p-5 flex-wrap lg:w-full md:w-3xl sm:w-md md:justify-center  gap-10`}
             >
-              {templates
-                .filter((i) => i.uploadedBy== username)
-                .map((template) => (
+              {
+             templates.filter((i) =>showOnlyMine ? i.uploadedBy==username:true ).map((template) => (
                   <div
                     className="bg-white rounded-xl shadow-lg overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-xl cursor-pointer"
                     key={template.id}
@@ -297,7 +348,7 @@ export const TemplateList = () => {
                   </div>
                 ))}
             </ul>
-          </>
+          </section>
         )}
       </section>
     </>

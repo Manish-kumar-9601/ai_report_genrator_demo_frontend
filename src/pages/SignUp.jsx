@@ -1,6 +1,6 @@
 import axios from "axios";
 import  { useContext, useState } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { z } from "zod";
 import { UserContext } from "../../context/UserContext";
 
@@ -235,13 +235,13 @@ export const SignupPage = () => {
           </form>
           <p className="mt-8 text-center text-gray-600 text-sm">
             Already have an account?{" "}
-            <a
-              href="#"
+            <Link
+              to={'/login'}
               className="font-medium text-[#003366] hover:text-[#FF6600]"
             >
        
               Login here
-            </a>
+            </Link>
           </p>
         </div>
       </section>

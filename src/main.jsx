@@ -1,16 +1,16 @@
-import { StrictMode, useContext } from 'react'
+import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import {BrowserRouter as Router, Route, Routes, Outlet, Navigate } from 'react-router';
+import {BrowserRouter as Router, Route, Routes} from 'react-router';
  
 import { Navbar } from './components/Navbar';
 import { TemplateList } from './pages/TemplateList';
 import { App } from './App';
 import { ContactUsPage } from './pages/ContactUs';
 import { Templates } from './pages/Templates';
-import { UserContext, UserProvider } from '../context/UserContext';
+import {  UserProvider } from '../context/UserContext';
 import { SignupPage } from './pages/SignUp';
-import { LoginPage } from './pages/login';
+import { LoginPage } from './pages/Login';
 import { AboutPage } from './pages/About';
  
 

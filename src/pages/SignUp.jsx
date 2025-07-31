@@ -146,11 +146,10 @@ export const SignupPage = () => {
       <section className="container mx-auto flex items-center justify-center min-h-screen py-12 px-4">
         <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-12 max-w-md w-full">
           <div className="flex justify-center mb-6">
-            {/* Using a placeholder image for the logo, replace with your actual bmu.png path */}
             <img
-              src="https://placehold.co/100x100/003366/FF6600?text=BMU"
+              src="/bmu AI.png"
               alt="BMU Logo"
-              className="h-24 w-24 object-contain rounded-full border-2 border-[#003366] p-2"
+              className="md:h-30 md:w-30 lg:w-35 lg:h-35 w-24 h-24 object-contain  "
             />
           </div>
           <h2 className="text-4xl font-bold text-[#003366] mb-8 text-center">
@@ -236,10 +235,9 @@ export const SignupPage = () => {
           <p className="mt-8 text-center text-gray-600 text-sm">
             Already have an account?{" "}
             <Link
-              to={'/login'}
+              to={"/login"}
               className="font-medium text-[#003366] hover:text-[#FF6600]"
             >
-       
               Login here
             </Link>
           </p>

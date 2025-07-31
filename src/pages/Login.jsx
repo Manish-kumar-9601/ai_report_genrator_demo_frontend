@@ -100,9 +100,9 @@ export const LoginPage = () => {
       <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md transform transition-all duration-300 hover:scale-105">
         <div className="flex justify-center mb-6">
           <img
-            src="https://placehold.co/100x100/003366/FF6600?text=BMU"
+            src="/bmu AI.png"
             alt="BMU Logo"
-            className="h-24 w-24 object-contain rounded-full border-2 border-[#003366] p-2"
+            className="md:h-30 md:w-30 lg:w-35 lg:h-35 w-24 h-24 object-contain  "
           />
         </div>
         <h2 className="text-4xl font-extrabold text-center text-[#003366] mb-8">

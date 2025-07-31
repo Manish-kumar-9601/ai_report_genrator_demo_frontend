@@ -278,8 +278,15 @@ export const TemplateList = () => {
             <ul
               className={` list-disc  lg:grid lg:grid-cols-2  md:flex grid p-5 flex-wrap lg:w-full md:w-3xl sm:w-md md:justify-center  gap-10`}
             >
-              {
-             templates.filter((i) =>showOnlyMine ? i.uploadedBy==username:true ).map((template) => (
+              {templates
+                .filter((i) =>
+                  showOnlyMine
+                    ? i.uploadedBy == username
+                    : typeof i.uploadedBy === "string" && searchTerm
+                    ? i.uploadedBy.toLowerCase().includes(searchTerm.toLowerCase())
+                    : true
+                )
+                .map((template) => (
                   <div
                     className="bg-white rounded-xl shadow-lg overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-xl cursor-pointer"
                     key={template.id}

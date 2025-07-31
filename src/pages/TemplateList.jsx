@@ -118,9 +118,10 @@ export const TemplateList = () => {
       setLoading(false);
     }
   };
+  
   useEffect(() => {
     fetchTemplates();
-  }, []);
+  }, [onChange]);
   console.log("Templates:", templates);
   const dateFormatter = (dateString) => {
     const options = {
